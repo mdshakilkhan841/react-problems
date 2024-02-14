@@ -7,6 +7,7 @@ const Problem1 = () => {
     status: "",
   });
   const [userData, setUserData] = useState([]);
+  const [sortedUserData, setSortedUserData] = useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -19,7 +20,38 @@ const Problem1 = () => {
     });
   };
 
+  // Sorting data for different state
+  const filterData = () => {
+    if (show === "active") {
+      let data = userData?.filter(
+        (item) => item.status.toLowerCase() === "active"
+      );
+      setSortedUserData(data);
+    } else if (show === "completed") {
+      let data = userData?.filter(
+        (item) => item.status.toLowerCase() === "completed"
+      );
+      setSortedUserData(data);
+    } else {
+      const order = ["active", "completed", "pending", "archive"];
+      const data = userData
+        .filter((item) => order.includes(item.status.toLowerCase()))
+        .sort(
+          (a, b) =>
+            order.indexOf(a.status.toLowerCase()) -
+            order.indexOf(b.status.toLowerCase())
+        );
+      //   console.log("🚀 ~ filterData ~ data:", data);
+      setSortedUserData(data);
+    }
+  };
+
+  useEffect(() => {
+    filterData();
+  }, [show, userData]);
+
   const handleClick = (val) => {
+    // console.log("🚀 ~ handleClick ~ val:", val)
     setShow(val);
   };
 
@@ -43,6 +75,7 @@ const Problem1 = () => {
                 type="text"
                 className="form-control"
                 placeholder="Name"
+                required
                 value={formData.name}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
@@ -54,6 +87,7 @@ const Problem1 = () => {
                 type="text"
                 className="form-control"
                 placeholder="Status"
+                required
                 value={formData.status}
                 onChange={(e) =>
                   setFormData({ ...formData, status: e.target.value })
@@ -110,10 +144,12 @@ const Problem1 = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Mark</td>
-                <td>Otto</td>
-              </tr>
+              {sortedUserData?.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.name}</td>
+                  <td>{item.status}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
